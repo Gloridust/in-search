@@ -23,28 +23,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const start = (pageNumber - 1) * 10
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(q)}&start=${start}`
 
-    const { data } = await axios.get(searchUrl, {
+    const response = await axios.get(searchUrl, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9', // 添加语言头以避免重定向
       },
     })
 
-    const $ = cheerio.load(data)
+    if (!response || !response.data) {
+      throw new Error('No data received from Google')
+    }
+
+    const $ = cheerio.load(response.data)
     const results: SearchResult[] = []
 
-    $('#search .g').each((index, element) => {
+    // 更新选择器以匹配最新的Google搜索结果页面结构
+    $('div.g').each((index, element) => {
       const title = $(element).find('h3').text()
       const link = $(element).find('a').attr('href')
       let snippet = ''
 
-      const snippetElement = $(element).find('.VwiC3b.yXK7lf.lVm3ye.r025kc.hJNv6b.Hdw6tb')
+      // 更新选择器以匹配最新的snippet类名
+      const snippetElement = $(element).find('span.aCOpRe') // 可能需要根据Google的HTML结构调整
 
       if (snippetElement.length > 0) {
-        snippet = snippetElement
-          .map((i, el) => $(el).text())
-          .get()
-          .join(' ')
+        snippet = snippetElement.text()
       }
 
       if (title && link) {
@@ -57,8 +61,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     res.status(200).json({ results })
-  } catch (error) {
-    console.error('Error fetching search results:', error)
+  } catch (error: any) {
+    console.error('Error fetching search results:', error.message || error)
     res.status(500).json({ error: '无法获取搜索结果' })
   }
 }
