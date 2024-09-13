@@ -54,24 +54,24 @@ const Home = () => {
         <title>inSearch - 简洁搜索引擎</title>
         <meta name="description" content="inSearch 是一个简洁、高效的搜索引擎，提供纯净的搜索体验。" />
       </Head>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">inSearch</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4">
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">inSearch</h1>
         <form onSubmit={handleSubmit} className="w-full max-w-md relative">
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             placeholder="搜索..."
           />
           {suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-lg mt-2 shadow-lg z-10">
+            <ul className="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg mt-2 shadow-lg z-10">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="px-4 py-2 hover:bg-blue-100 cursor-pointer transition transform hover:scale-105"
+                  className="px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer transition transform hover:scale-105 dark:text-white"
                 >
                   {suggestion}
                 </li>

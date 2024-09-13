@@ -51,23 +51,23 @@ const SearchPage = () => {
         <title>搜索结果 - inSearch</title>
         <meta name="description" content={`搜索关键词: ${q}`} />
       </Head>
-      <div className="min-h-screen bg-gray-50 pt-24 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 px-4">
         <div className="max-w-4xl mx-auto">
           {loading ? (
-            <p className="text-center text-gray-600">加载中...</p>
+            <p className="text-center text-gray-600 dark:text-gray-300">加载中...</p>
           ) : (
             <>
-              <p className="text-gray-600 mb-4">搜索结果：{q}</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">搜索结果：{q}</p>
               <div className="space-y-4">
                 {results.map((result, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
+                    className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
                   >
-                    <a href={result.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xl font-semibold">
+                    <a href={result.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 text-xl font-semibold">
                       {result.title}
                     </a>
-                    <p className="text-gray-700 mt-2">{result.snippet}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mt-2">{result.snippet}</p>
                   </div>
                 ))}
               </div>
@@ -76,14 +76,14 @@ const SearchPage = () => {
                 {currentPage > 1 && (
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                    className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
                   >
                     上一页
                   </button>
                 )}
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
                 >
                   下一页
                 </button>

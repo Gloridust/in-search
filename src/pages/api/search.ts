@@ -35,17 +35,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error('No data received from Google')
     }
 
+    console.log('Google Search HTML:', response.data)
     const $ = cheerio.load(response.data)
     const results: SearchResult[] = []
 
-    // 更新选择器以匹配最新的Google搜索结果页面结构
+    // 根据最新的Google搜索结果页面结构调整选择器
     $('div.g').each((index, element) => {
       const title = $(element).find('h3').text()
       const link = $(element).find('a').attr('href')
       let snippet = ''
 
       // 更新选择器以匹配最新的snippet类名
-      const snippetElement = $(element).find('span.aCOpRe') // 可能需要根据Google的HTML结构调整
+      const snippetElement = $(element).find('div.IsZvec') // 可能需要根据Google的HTML结构调整
 
       if (snippetElement.length > 0) {
         snippet = snippetElement.text()
