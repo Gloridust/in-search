@@ -2,7 +2,7 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import Link from 'next/link'
+import Head from 'next/head'
 
 type SearchResult = {
   title: string
@@ -19,7 +19,10 @@ const SearchPage = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
-      if (typeof q !== 'string' || q.trim() === '') return
+      if (typeof q !== 'string' || q.trim() === '') {
+        setResults([])
+        return
+      }
       setLoading(true)
       try {
         const response = await axios.get(`/api/search?q=${encodeURIComponent(q)}&page=${currentPage}`)
@@ -39,6 +42,10 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 px-4">
+      <Head>
+        <title>搜索结果 - inSearch</title>
+        <meta name="description" content={`搜索关键词: ${q}`} />
+      </Head>
       <div className="max-w-4xl mx-auto">
         {loading ? (
           <p className="text-center text-gray-600">加载中...</p>
