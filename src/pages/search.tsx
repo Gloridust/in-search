@@ -66,15 +66,15 @@ const SearchPage = () => {
                     href={result.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
+                    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
                   >
-                    <div className="text-blue-600 dark:text-blue-400 text-xl font-semibold">
+                    <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
                       {result.title}
                     </div>
-                    <div className="text-gray-500 dark:text-gray-400 text-sm">
+                    <div className="text-gray-500 dark:text-gray-400 text-sm truncate">
                       {result.link}
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mt-2">{result.snippet}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mt-1 text-sm">{result.snippet}</p>
                   </a>
                 ))}
               </div>
@@ -83,14 +83,14 @@ const SearchPage = () => {
                 {currentPage > 1 && (
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
-                    className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
+                    className="px-3 py-1.5 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
                   >
                     上一页
                   </button>
                 )}
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
+                  className="px-3 py-1.5 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition"
                 >
                   下一页
                 </button>
