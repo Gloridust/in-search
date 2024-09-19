@@ -9,6 +9,7 @@ type SearchResult = {
   title: string
   link: string
   snippet: string
+  icon: string
 }
 
 const SearchPage = () => {
@@ -68,8 +69,13 @@ const SearchPage = () => {
                     rel="noopener noreferrer"
                     className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
                   >
-                    <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
-                      {result.title}
+                    <div className="flex items-center">
+                      {result.icon && (
+                        <img src={result.icon} alt="icon" className="w-6 h-6 mr-2 rounded-full" />
+                      )}
+                      <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+                        {result.title}
+                      </div>
                     </div>
                     <div className="text-gray-500 dark:text-gray-400 text-sm truncate">
                       {result.link}

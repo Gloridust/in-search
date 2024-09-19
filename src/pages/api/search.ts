@@ -8,6 +8,7 @@ type SearchResult = {
   title: string
   link: string
   snippet: string
+  icon: string
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -38,12 +39,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const title = $(element).find('h3').text()
       const link = $(element).find('a').attr('href')
       const snippet = $(element).find('.VwiC3b').text()
+      const icon = $(element).find('img').attr('src') || '' // 假设图标在 img 标签中
 
       if (title && link) {
         results.push({
           title,
           link,
           snippet,
+          icon,
         })
       }
     })
