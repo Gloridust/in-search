@@ -1,4 +1,5 @@
 // pages/index.tsx
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FaSearch } from 'react-icons/fa'
@@ -8,6 +9,7 @@ import Head from 'next/head'
 const Home = () => {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>([])
+  const [selectedSuggestion, setSelectedSuggestion] = useState<number>(-1)
   const router = useRouter()
 
   useEffect(() => {
@@ -31,10 +33,24 @@ const Home = () => {
 
     const debounceFetch = setTimeout(() => {
       fetchSuggestions()
-    }, 300) // 防抖延迟
+    }, 300)
 
     return () => clearTimeout(debounceFetch)
   }, [query])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      setSelectedSuggestion((prev) => Math.min(prev + 1, suggestions.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      setSelectedSuggestion((prev) => Math.max(prev - 1, 0))
+    } else if (e.key === 'Enter') {
+      if (selectedSuggestion >= 0) {
+        handleSuggestionClick(suggestions[selectedSuggestion])
+      } else {
+        handleSubmit(e)
+      }
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,6 +78,7 @@ const Home = () => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             placeholder="搜索..."
           />
@@ -71,7 +88,9 @@ const Home = () => {
                 <li
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer transition transform hover:scale-105 dark:text-white"
+                  className={`px-4 py-2 cursor-pointer transition ${
+                    selectedSuggestion === index ? 'bg-blue-100 dark:bg-gray-700' : 'hover:bg-blue-50 dark:hover:bg-gray-600'
+                  } dark:text-white`}
                 >
                   {suggestion}
                 </li>

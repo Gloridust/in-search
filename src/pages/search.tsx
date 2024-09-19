@@ -67,7 +67,7 @@ const SearchPage = () => {
                     href={result.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+                    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-102"
                   >
                     <div className="flex items-center">
                       {result.icon && (
