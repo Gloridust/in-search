@@ -26,8 +26,8 @@ const SearchPage = () => {
       setLoading(true)
       try {
         const response = await axios.get(`/api/search?q=${encodeURIComponent(q)}&page=${currentPage}`)
-        if (response.data && response.data.results) {
-          setResults(response.data.results)
+        if (Array.isArray(response.data)) {
+          setResults(response.data)
         } else {
           setResults([])
         }
