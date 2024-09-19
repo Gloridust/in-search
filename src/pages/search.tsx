@@ -1,4 +1,5 @@
 // pages/search.tsx
+
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -60,15 +61,21 @@ const SearchPage = () => {
               <p className="text-gray-600 dark:text-gray-300 mb-4">搜索结果：{q}</p>
               <div className="space-y-4">
                 {results.map((result, index) => (
-                  <div
+                  <a
                     key={index}
-                    className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
+                    href={result.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition transform hover:scale-105"
                   >
-                    <a href={result.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 text-xl font-semibold">
+                    <div className="text-blue-600 dark:text-blue-400 text-xl font-semibold">
                       {result.title}
-                    </a>
+                    </div>
+                    <div className="text-gray-500 dark:text-gray-400 text-sm">
+                      {result.link}
+                    </div>
                     <p className="text-gray-700 dark:text-gray-300 mt-2">{result.snippet}</p>
-                  </div>
+                  </a>
                 ))}
               </div>
               {/* 分页控件 */}
