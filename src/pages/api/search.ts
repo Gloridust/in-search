@@ -2,7 +2,7 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
-import * as cheerio from 'cheerio'  // 使用星号导入
+import * as cheerio from 'cheerio'
 
 type SearchResult = {
   title: string
@@ -31,15 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     })
 
-    const $ = cheerio.load(response.data)  // 使用 cheerio.load
-
+    const $ = cheerio.load(response.data)
     const results: SearchResult[] = []
 
-    $('div.g').each((index, element) => {
-      const titleElement = $(element).find('h3')
-      const title = titleElement.text()
+    $('#search .g').each((index, element) => {
+      const title = $(element).find('h3').text()
       const link = $(element).find('a').attr('href')
-      const snippet = $(element).find('.s .st').text()
+      const snippet = $(element).find('.VwiC3b').text()
 
       if (title && link) {
         results.push({
