@@ -52,8 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     res.status(200).json(results)
-  } catch (error: any) {
-    console.error('Error fetching search results:', error.message || error)
-    res.status(500).json({ error: '无法获取搜索结果' })
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error fetching search results:', errorMessage);
+    res.status(500).json({ error: '搜索失败' });
   }
 }

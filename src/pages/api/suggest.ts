@@ -31,8 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const suggestions: string[] = response.data[1]
 
     res.status(200).json({ suggestions })
-  } catch (error: any) {
-    console.error('Error fetching suggestions:', error.message || error)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error fetching search results:', errorMessage);
     res.status(500).json({ error: '无法获取搜索建议' })
   }
 }

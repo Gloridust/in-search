@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Head from 'next/head'
+import Image from 'next/image'
 
 type SearchResult = {
   title: string
@@ -71,7 +72,7 @@ const SearchPage = () => {
                   >
                     <div className="flex items-center">
                       {result.icon && (
-                        <img src={result.icon} alt="icon" className="w-6 h-6 mr-2 rounded-full" />
+                        <Image src={result.icon} alt="icon" className="w-6 h-6 mr-2 rounded-full" />
                       )}
                       <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
                         {result.title}
