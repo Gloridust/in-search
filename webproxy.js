@@ -16,7 +16,7 @@ const config = {
   
   async function handleRequest(request) {
     const url = new URL(request.url);
-  
+    
     // 检查是否请求 /ads.txt
     if (url.pathname === '/ads.txt') {
       return new Response(config.ads_txt_content, {
@@ -26,7 +26,6 @@ const config = {
   
     const region = request.headers.get('cf-ipcountry')?.toUpperCase();
     const ip_address = request.headers.get('cf-connecting-ip');
-    const user_agent = request.headers.get('user-agent');
   
     // 检查区域和IP限制
     if (config.blocked_region.includes(region)) {
@@ -36,33 +35,60 @@ const config = {
       return new Response('Access denied: Your IP address is blocked.', { status: 403 });
     }
   
-    url.protocol = config.https ? 'https:' : 'http:';
-    url.host = await device_status(user_agent) ? config.upstream : config.upstream_mobile;
-    url.pathname = url.pathname === '/' ? config.upstream_path : config.upstream_path + url.pathname;
+    // 从查询参数中获取目标 URL
+    let targetUrl = url.searchParams.get('url');
+    if (!targetUrl) {
+      return new Response('Missing target URL', { status: 400 });
+    }
   
-    const modifiedRequest = new Request(url.toString(), {
-      headers: request.headers,
+    // 确保目标 URL 有协议
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      targetUrl = 'https://' + targetUrl;
+    }
+  
+    const targetUrlObj = new URL(targetUrl);
+  
+    // 创建新的请求
+    const newRequestInit = {
       method: request.method,
+      headers: new Headers(request.headers),
       body: request.body,
-      redirect: 'follow'
-    });
+      redirect: 'manual'
+    };
+  
+    // 移除或修改可能导致问题的头
+    newRequestInit.headers.delete('host');
+    newRequestInit.headers.set('origin', targetUrlObj.origin);
+    newRequestInit.headers.set('referer', targetUrlObj.href);
+  
+    const newRequest = new Request(targetUrl, newRequestInit);
   
     try {
-      const response = await fetch(modifiedRequest);
-      const modifiedResponse = await modifyResponse(response, url.hostname, request.url);
-      return modifiedResponse;
+      const response = await fetch(newRequest);
+      return await handleResponse(response, request, targetUrlObj);
     } catch (error) {
       return new Response(`Error fetching content: ${error.message}`, { status: 500 });
     }
   }
   
-  async function modifyResponse(response, upstream_domain, original_url) {
-    const content_type = response.headers.get('content-type');
+  async function handleResponse(response, originalRequest, targetUrl) {
+    const contentType = response.headers.get('content-type');
     let body = response.body;
   
-    if (content_type && (content_type.includes('text/html') || content_type.includes('text/css') || content_type.includes('application/javascript'))) {
+    // 处理重定向
+    if (response.status === 301 || response.status === 302 || response.status === 307 || response.status === 308) {
+      const location = response.headers.get('location');
+      if (location) {
+        const newUrl = new URL(location, targetUrl.href);
+        const proxyUrl = new URL(originalRequest.url);
+        proxyUrl.searchParams.set('url', newUrl.href);
+        return Response.redirect(proxyUrl.href, response.status);
+      }
+    }
+  
+    if (contentType && (contentType.includes('text/html') || contentType.includes('text/css') || contentType.includes('application/javascript'))) {
       let text = await response.text();
-      text = replaceText(text, upstream_domain, new URL(original_url).hostname);
+      text = replaceUrls(text, targetUrl, new URL(originalRequest.url));
       text = injectScript(text);
       body = text;
     }
@@ -77,8 +103,10 @@ const config = {
     // 修改 Location 头，如果存在的话
     if (newHeaders.has('location')) {
       let location = newHeaders.get('location');
-      location = replaceText(location, upstream_domain, new URL(original_url).hostname);
-      newHeaders.set('location', location);
+      const newLocationUrl = new URL(location, targetUrl.href);
+      const proxyUrl = new URL(originalRequest.url);
+      proxyUrl.searchParams.set('url', newLocationUrl.href);
+      newHeaders.set('location', proxyUrl.href);
     }
   
     return new Response(body, {
@@ -88,14 +116,31 @@ const config = {
     });
   }
   
-  function replaceText(text, upstream_domain, custom_domain) {
-    for (let [from, to] of Object.entries(config.replace_dict)) {
-      from = from.replace('$upstream', upstream_domain).replace('$custom_domain', custom_domain);
-      to = to.replace('$upstream', upstream_domain).replace('$custom_domain', custom_domain);
-      
-      const regex = new RegExp(from.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-      text = text.replace(regex, to);
-    }
+  function replaceUrls(text, targetUrl, proxyUrl) {
+    // 替换绝对路径
+    text = text.replace(/((?:src|href|action)\s*=\s*["'])(https?:\/\/[^"']+)/gi, (match, prefix, url) => {
+      const newUrl = new URL(url, targetUrl.href);
+      const proxiedUrl = new URL(proxyUrl.href);
+      proxiedUrl.searchParams.set('url', newUrl.href);
+      return `${prefix}${proxiedUrl.href}`;
+    });
+  
+    // 替换相对路径
+    text = text.replace(/((?:src|href|action)\s*=\s*["'])(\/?[^"']+)/gi, (match, prefix, path) => {
+      if (path.startsWith('data:') || path.startsWith('#')) return match;
+      const newUrl = new URL(path, targetUrl.href);
+      const proxiedUrl = new URL(proxyUrl.href);
+      proxiedUrl.searchParams.set('url', newUrl.href);
+      return `${prefix}${proxiedUrl.href}`;
+    });
+  
+    // 替换内联样式中的 URL
+    text = text.replace(/url\((['"]?)(https?:\/\/[^)]+|\/[^)]+)\1\)/gi, (match, quote, url) => {
+      const newUrl = new URL(url, targetUrl.href);
+      const proxiedUrl = new URL(proxyUrl.href);
+      proxiedUrl.searchParams.set('url', newUrl.href);
+      return `url(${quote}${proxiedUrl.href}${quote})`;
+    });
   
     return text;
   }
@@ -103,10 +148,5 @@ const config = {
   function injectScript(html) {
     const headRegex = /(<head(?:\s[^>]*)?>)/i;
     return html.replace(headRegex, `\$1${config.inject_script}`);
-  }
-  
-  async function device_status(user_agent_info) {
-    const mobile_agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
-    return !mobile_agents.some(agent => user_agent_info.includes(agent));
   }
   
