@@ -68,7 +68,7 @@ const SearchPage = () => {
     // 移除 "https://" 或 "http://" 前缀（如果存在）
     originalUrl = originalUrl.replace(/^(https?:\/\/)/, '');
     // 构造代理 URL
-    return `https://webproxy.innovisle.net/proxy?url=${originalUrl}`;
+    return `https://webproxy.innovisle.net/?url=${originalUrl}`;
   };
   
   return (
