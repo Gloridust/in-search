@@ -18,9 +18,13 @@ const SearchPage = () => {
   const { q, page } = router.query
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const [proxyEnabled, setProxyEnabled] = useState<boolean>(false)
   const currentPage = typeof page === 'string' ? parseInt(page) : 1
 
   useEffect(() => {
+    const storedProxyEnabled = localStorage.getItem('proxyEnabled')
+    setProxyEnabled(storedProxyEnabled === 'true')
+
     const fetchResults = async () => {
       if (typeof q !== 'string' || q.trim() === '') {
         setResults([])
@@ -44,10 +48,33 @@ const SearchPage = () => {
     fetchResults()
   }, [q, currentPage])
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedProxyEnabled = localStorage.getItem('proxyEnabled')
+      setProxyEnabled(storedProxyEnabled === 'true')
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [])
+
   const handlePageChange = (newPage: number) => {
     router.push(`/search?q=${encodeURIComponent(q as string)}&page=${newPage}`)
   }
 
+  const getProxyUrl = (originalUrl: string) => {
+    // 移除 "https://" 或 "http://" 前缀（如果存在）
+    originalUrl = originalUrl.replace(/^(https?:\/\/)/, '');
+    
+    // 移除尾部的斜杠（如果存在）
+    originalUrl = originalUrl.replace(/\/$/, '');
+    
+    // 构造代理 URL
+    return `https://webproxy.innovisle.net/${originalUrl}`;
+  };
+  
   return (
     <>
       <Head>
@@ -65,14 +92,20 @@ const SearchPage = () => {
                 {results.map((result, index) => (
                   <a
                     key={index}
-                    href={result.link}
+                    href={proxyEnabled ? getProxyUrl(result.link) : result.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-102"
+                    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition"
                   >
                     <div className="flex items-center">
                       {result.icon && (
-                        <Image src={result.icon} alt="icon" className="w-6 h-6 mr-2 rounded-full" />
+                        <Image
+                          src={result.icon}
+                          alt="icon"
+                          width={24}
+                          height={24}
+                          className="mr-2 rounded-full"
+                        />
                       )}
                       <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
                         {result.title}
