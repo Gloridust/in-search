@@ -72,7 +72,7 @@ const SearchPage = () => {
     originalUrl = originalUrl.replace(/\/$/, '');
     
     // 构造代理 URL
-    return `https://webproxy.innovisle.net/${originalUrl}`;
+    return `https://webproxy.innovisle.net/proxy?url=${originalUrl}`;
   };
   
   return (
