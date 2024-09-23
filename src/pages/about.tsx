@@ -19,7 +19,7 @@ const About = () => {
             inSearch 专注于提供最相关的网页搜索结果，同时保持界面的简洁和响应速度。
           </p>
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            感谢您使用 inSearch，希望我们的服务能够满足您的需求。
+            感谢您使用 inSearch，希望我们的服务能够满足您的需求。如有任何建议，欢迎邮件联系：<Link href="mailto:ethan@innovisle.net">ethan@innovisle.net</Link>
           </p>
           <Link href="/" className="mt-4 inline-block px-6 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800 transition">
             返回首页
