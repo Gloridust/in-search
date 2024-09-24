@@ -72,7 +72,7 @@ const Home = () => {
         <title>inSearch - 简洁搜索引擎</title>
         <meta name="description" content="inSearch 是一个简洁、高效的搜索引擎，提供纯净的搜索体验。" />
       </Head>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
         <div className="w-full max-w-2xl -mt-24">
           <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-8 text-center">inSearch</h1>
           <form onSubmit={handleSubmit} className="relative">

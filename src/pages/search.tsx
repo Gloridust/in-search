@@ -145,7 +145,7 @@ const SearchPage = () => {
         <title>搜索结果 - inSearch</title>
         <meta name="description" content={`搜索关键词: ${q}`} />
       </Head>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 px-4">
+      <div className="min-h-screen pt-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <form onSubmit={handleSubmit} className="w-full max-w-2xl relative mx-auto">
