@@ -1,3 +1,5 @@
+# inSearch
+
 <p align="center">
   <a href="#">
     <img width="180" src="public/favicon-r.png">
