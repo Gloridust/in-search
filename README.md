@@ -7,10 +7,13 @@
 
 inSearch 是一个旨在为无法访问 Google 的用户提供纯净搜索体验的搜索引擎。我们采用简约、扁平化的设计，确保用户在搜索时拥有高效且愉悦的体验。
 
+![Preview](public/Preview.png)
+
 ## 特性
 
 - 源自 Google，轻量搜索：使用了 Google 的（非官方）API 获取搜索结果，提供了精确又清爽的搜索结果；
-- 网页代理，全面直达：提供了“网页代理”功能，即使被墙也能访问 Github、维基百科等网站。
+- 网页代理，全面直达：提供了“网页代理”功能，即使被墙也能访问 Github、维基百科等网站;
+- 系统接口，原生体验：适配了 macOS 等系统级深色模式接口，体验更沉浸。
 
 ## 技术
 
@@ -42,3 +45,7 @@ yarn dev
 1. 你可以轻松使用 [Vercel](https://vercel.com) 部署该项目的前端，开箱即用；
 2. 网页代理功能需要用到 CloudFlare Workers，你需要在 [CloudFlare](https://dash.cloudflare.com/) 新建一个 Workers ，然后将 [webproxy.js](webproxy.js) 的内容粘贴进去
 3. 如果你需要自己部署使用，请注意更换对应 URL 等。
+
+## License
+
+Apache-2.0
